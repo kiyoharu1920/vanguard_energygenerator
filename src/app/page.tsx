@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 const energyGeneratorText = `《エネルギージェネレーター/Energy Generator》
 ライドデッキクレスト
 
+
 （ライドデッキクレストをライドデッキに１枚だけ入れられる）
 【自】【ライドデッキ】：あなたがライドした時、このカードをクレストゾーンに置き、あなたが後攻なら【エネルギーチャージ】(3)。
 【永】：あなたはエネルギーを10個まで持てる。
