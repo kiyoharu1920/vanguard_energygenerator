@@ -95,8 +95,8 @@ export default function Home() {
           className={`${upDownClass} bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg`}
           style={{
             width: cellSize as React.CSSProperties["width"],
-            height: cellSize as React.CSSProperties["fontSize"],
-            fontSize,
+            height: cellSize as React.CSSProperties["height"],
+            fontSize: cellSize as React.CSSProperties["fontSize"],
           }}
           onClick={(e) => clickChangeHandler(e, -1)}
         >
@@ -111,9 +111,9 @@ export default function Home() {
               draggable={false}
               onClick={clickNumHandler}
               style={{
-                width: cellSize as any,
-                height: cellSize as any,
-                fontSize,
+                width: cellSize as React.CSSProperties["width"],
+                height: cellSize as React.CSSProperties["height"],
+                fontSize: cellSize as React.CSSProperties["fontSize"],
               }}
             >
               {index}
@@ -123,7 +123,11 @@ export default function Home() {
         <button
           id={`${player}_plus`}
           className={`${upDownClass} bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-lg`}
-          style={{ width: cellSize as any, height: cellSize as any, fontSize }}
+          style={{
+            width: cellSize as React.CSSProperties["width"],
+            height: cellSize as React.CSSProperties["height"],
+            fontSize: cellSize as React.CSSProperties["fontSize"],
+          }}
           onClick={(e) => clickChangeHandler(e, 1)}
         >
           +
