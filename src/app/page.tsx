@@ -48,7 +48,12 @@ export default function Home() {
         const el = document.getElementById(`${player}_${i}`);
         if (el) el.style.backgroundColor = "#55ffff";
       }
-      player === "p1" ? setNow1pEnergy(number) : setNow2pEnergy(number);
+
+      if (player === "p1") {
+        setNow1pEnergy(number);
+      } else if (player === "p2") {
+        setNow2pEnergy(number);
+      }
     },
     []
   );
@@ -60,7 +65,12 @@ export default function Home() {
       const nowEnergy = player === "p1" ? now1pEnergy : now2pEnergy;
       const newValue = Math.max(0, Math.min(10, nowEnergy + direction));
       document.getElementById(`${player}_${newValue}`)?.click();
-      player === "p1" ? setNow1pEnergy(newValue) : setNow2pEnergy(newValue);
+
+      if (player === "p1") {
+        setNow1pEnergy(newValue);
+      } else if (player === "p2") {
+        setNow2pEnergy(newValue);
+      }
     },
     [now1pEnergy, now2pEnergy]
   );
@@ -83,7 +93,11 @@ export default function Home() {
         <button
           id={`${player}_minus`}
           className={`${upDownClass} bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg`}
-          style={{ width: cellSize as any, height: cellSize as any, fontSize }}
+          style={{
+            width: cellSize as React.CSSProperties["width"],
+            height: cellSize as React.CSSProperties["fontSize"],
+            fontSize,
+          }}
           onClick={(e) => clickChangeHandler(e, -1)}
         >
           -
