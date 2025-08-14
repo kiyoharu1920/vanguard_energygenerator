@@ -1,103 +1,144 @@
-import Image from "next/image";
+"use client";
+import { useState, useEffect, useCallback } from "react";
+
+const energyGeneratorText = `《エネルギージェネレーター/Energy Generator》
+ライドデッキクレスト
+
+（ライドデッキクレストをライドデッキに１枚だけ入れられる）
+【自】【ライドデッキ】：あなたがライドした時、このカードをクレストゾーンに置き、あなたが後攻なら【エネルギーチャージ】(3)。
+【永】：あなたはエネルギーを10個まで持てる。
+【自】：あなたのライドフェイズ開始時、【エネルギーチャージ】(3)。
+【起】【ターン1回】：【コスト】[【エネルギーブラスト】(7)]することで、１枚引く。
+`;
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [now1pEnergy, setNow1pEnergy] = useState(0);
+  const [now2pEnergy, setNow2pEnergy] = useState(0);
+  const [isVertical, setIsVertical] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // 画面の向きに応じてレイアウトを切り替え
+  useEffect(() => {
+    const update = () => {
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
+      setIsVertical(winH > winW);
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
+  }, []);
+
+  const clickNumHandler = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLDivElement;
+      const id = target.id;
+      const player = id.split("_")[0]; // "p1" or "p2"
+      const number = parseInt(id.split("_")[1], 10);
+
+      target.style.backgroundColor = "#55ff55"; // lightgreen
+      for (let i = number + 1; i < 11; i++) {
+        const el = document.getElementById(`${player}_${i}`);
+        if (el) el.style.backgroundColor = "transparent";
+      }
+      for (let i = 0; i < number; i++) {
+        const el = document.getElementById(`${player}_${i}`);
+        if (el) el.style.backgroundColor = "#55ffff";
+      }
+      player === "p1" ? setNow1pEnergy(number) : setNow2pEnergy(number);
+    },
+    []
+  );
+
+  const clickChangeHandler = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>, direction: number) => {
+      const target = event.target as HTMLButtonElement;
+      const player = target.id.split("_")[0]; // "p1" or "p2"
+      const nowEnergy = player === "p1" ? now1pEnergy : now2pEnergy;
+      const newValue = Math.max(0, Math.min(10, nowEnergy + direction));
+      document.getElementById(`${player}_${newValue}`)?.click();
+      player === "p1" ? setNow1pEnergy(newValue) : setNow2pEnergy(newValue);
+    },
+    [now1pEnergy, now2pEnergy]
+  );
+
+  // vminベースのセルサイズ（画面に追従、最大56px）
+  const cellSize = "min(12vmin, 96px)";
+  const fontSize = "calc(min(7vmin, 96px) * 0.45)";
+
+  const energyGageElements = (player: string, rotate: boolean) => {
+    const energyNumberClass =
+      "flex items-center justify-center border-r border-black text-center select-none";
+    const upDownClass =
+      "flex items-center justify-center border border-black text-white select-none";
+    const rotateClass = rotate ? "rotate-180" : "";
+    const playerBg = player === "p1" ? "bg-blue-200" : "bg-red-200";
+    const divClass = `flex items-center gap-[1vmin] w-full h-full justify-center border ${rotateClass} ${playerBg}`;
+
+    return (
+      <div key={player} className={divClass}>
+        <button
+          id={`${player}_minus`}
+          className={`${upDownClass} bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-lg`}
+          style={{ width: cellSize as any, height: cellSize as any, fontSize }}
+          onClick={(e) => clickChangeHandler(e, -1)}
+        >
+          -
+        </button>
+        <div className="flex border border-black rounded-lg overflow-hidden">
+          {Array.from({ length: 11 }, (_, index) => (
+            <div
+              key={index}
+              id={`${player}_${index}`}
+              className={energyNumberClass}
+              draggable={false}
+              onClick={clickNumHandler}
+              style={{
+                width: cellSize as any,
+                height: cellSize as any,
+                fontSize,
+              }}
+            >
+              {index}
+            </div>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          id={`${player}_plus`}
+          className={`${upDownClass} bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-lg`}
+          style={{ width: cellSize as any, height: cellSize as any, fontSize }}
+          onClick={(e) => clickChangeHandler(e, 1)}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          +
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    // 画面いっぱいに（100vw/100vh）広げる
+    <div className="fixed inset-0 w-screen h-screen">
+      <div className="w-full h-full flex flex-col items-center justify-between p-[2vmin] box-border gap-[2vmin]">
+        {energyGageElements("p2", true)}
+
+        <div
+          className={`flex ${
+            isVertical ? "flex-col" : "flex-row"
+          } gap-[2vmin] items-center w-full flex-1`}
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <pre className="whitespace-pre-wrap border p-[1.5vmin] text-[2vmin] leading-[3vmin] rotate-180 flex-1 overflow-auto rounded-xl bg-red-200">
+            {energyGeneratorText}
+          </pre>
+          <pre className="whitespace-pre-wrap border p-[1.5vmin] text-[2vmin] leading-[3vmin] flex-1 overflow-auto rounded-xl bg-blue-200">
+            {energyGeneratorText}
+          </pre>
+        </div>
+
+        {energyGageElements("p1", false)}
+      </div>
     </div>
   );
 }
