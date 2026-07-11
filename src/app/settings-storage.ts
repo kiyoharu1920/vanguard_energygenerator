@@ -74,7 +74,7 @@ function readStoredSettings(): StoredSettings | null {
  *
  * @param settings 保存するUI設定。
  */
-export function writeStoredSettings(settings: StoredSettings): void {
+function writeStoredSettings(settings: StoredSettings): void {
   inMemorySettings = settings;
   if (typeof window === "undefined") return;
 
@@ -95,6 +95,15 @@ export function writeStoredSettings(settings: StoredSettings): void {
  */
 function getStoredSettingsSnapshot(): StoredSettings {
   return readStoredSettings() ?? inMemorySettings;
+}
+
+/**
+ * 現在の保存設定を基準に、指定された項目だけ更新する。
+ *
+ * @param settings 更新するUI設定。
+ */
+export function updateStoredSettings(settings: Partial<StoredSettings>): void {
+  writeStoredSettings({ ...getStoredSettingsSnapshot(), ...settings });
 }
 
 /**

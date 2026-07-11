@@ -42,8 +42,9 @@ export function ResizeHandle({
 
   /** リサイズ開始時のポインター位置とセル高さを保持する。 */
   const handleResizeDown = (e: PointerEvent<HTMLDivElement>): void => {
+    if (!e.isPrimary || e.button !== 0) return;
     e.stopPropagation();
-    setPointerCaptureSafely(e.currentTarget as HTMLDivElement, e.pointerId);
+    setPointerCaptureSafely(e.currentTarget, e.pointerId);
     resizeStart.current = { y: e.clientY, size: cellSize };
   };
 

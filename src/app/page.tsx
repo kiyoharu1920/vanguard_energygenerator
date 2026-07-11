@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { ControlPanel } from "./components/ControlPanel";
 import { EnergyGauge, CELL_DEFAULT, getResponsiveCellMax } from "./components/EnergyGauge";
 import { EnergyTextCard } from "./components/EnergyTextCard";
-import { useStoredSettings, writeStoredSettings } from "./settings-storage";
+import { updateStoredSettings, useStoredSettings } from "./settings-storage";
 import type { StoredSettings } from "./settings-storage";
 import { getNextSkin } from "./skins";
 import { getPageTheme } from "./theme";
@@ -62,13 +62,9 @@ export default function Home(): ReactElement {
   const isDouble = playerMode === "double";
   const gridRows = getGridRows(playerMode, showCardText);
 
-  /** 保存済みUI設定を一部だけ更新する。 */
-  const updateSettings = (settings: Partial<StoredSettings>): void => {
-    writeStoredSettings({ ...storedSettings, ...settings });
-  };
   /** 大きく配置が変わる設定だけView Transitionを挟む。 */
   const animateSettingsUpdate = (settings: Partial<StoredSettings>): void =>
-    animateLayoutChange(() => updateSettings(settings));
+    animateLayoutChange(() => updateStoredSettings(settings));
 
   /** エネルギー値とランダム結果を初期状態へ戻す。 */
   const resetGame = (): void => {
@@ -85,7 +81,7 @@ export default function Home(): ReactElement {
     animateSettingsUpdate({ isTwoPlayer: !storedSettings.isTwoPlayer });
   /** デザインスキンを次の候補へ巡回させる。 */
   const cycleSkin = (): void => {
-    updateSettings({ skin: getNextSkin(skin) });
+    updateStoredSettings({ skin: getNextSkin(skin) });
   };
 
   /**
@@ -104,7 +100,9 @@ export default function Home(): ReactElement {
       coin={coin}
       onTogglePlayerMode={togglePlayerMode}
       onResetGame={resetGame}
-      onToggleDark={() => updateSettings({ theme: isDark ? "light" : "dark" })}
+      onToggleDark={() =>
+        updateStoredSettings({ theme: isDark ? "light" : "dark" })
+      }
       onToggleCardText={toggleCardText}
       onCycleSkin={cycleSkin}
     />
