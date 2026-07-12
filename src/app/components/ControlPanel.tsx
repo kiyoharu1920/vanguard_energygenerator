@@ -40,7 +40,7 @@ const ACTION_BUTTON_CLASS =
 
 /** 両端のトグルボタン共通クラス。 */
 const TOGGLE_BUTTON_CLASS =
-  "min-w-0 flex-1 rounded-[var(--radius-control)] [border-width:var(--border-w)] px-1 text-[12px] active:scale-[0.97]";
+  "min-w-0 flex-1 rounded-[var(--radius-control)] [border-width:var(--border-w)] px-0.5 text-[10px] sm:px-1 sm:text-[12px] active:scale-[0.97]";
 
 type RandomToolButtonProps = {
   /** ボタンのテストID。 */
@@ -195,9 +195,10 @@ export function ControlPanel({
         onClick={onTogglePlayerMode}
         className={`${TOGGLE_BUTTON_CLASS} ${controlButtonClass} ${controlBg}`}
         ariaLabel={isDouble ? "1人用へ切り替える" : "2人用へ切り替える"}
+        title={isDouble ? "1人用へ切り替える" : "2人用へ切り替える"}
       >
         <span key={isDouble ? "double" : "single"} className="control-value-pop whitespace-nowrap">
-          {isDouble ? "1人" : "2人"}
+          {isDouble ? "1人へ" : "2人へ"}
         </span>
       </ControlButton>
       <ControlSlot className={wideActionWrapperClass}>
@@ -271,7 +272,7 @@ export function ControlPanel({
         title={showCardText ? "効果欄を閉じる" : "効果欄を開く"}
       >
         <span key={showCardText ? "open" : "closed"} className="control-value-pop whitespace-nowrap">
-          {showCardText ? "閉" : "開"}
+          {showCardText ? "閉じる" : "開く"}
         </span>
       </ControlButton>
     </div>
